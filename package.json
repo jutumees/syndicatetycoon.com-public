@@ -1,0 +1,9 @@
+{
+  "name": "syndicate-tycoon",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Syndicate Tycoon — corporate noir business strategy game and coming-soon website",
+  "type": "module",
+  "scripts": { "dev": "node scripts/serve.mjs", "test": "node --test tests/*.test.mjs" },
+  "engines": { "node": ">=20" }
+}
