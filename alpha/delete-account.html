@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Delete your Syndicate Tycoon account</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; background: #040507; color: #e8e6df; font: 16px/1.5 system-ui, sans-serif; }
+    main { max-width: 34rem; margin: 0 auto; padding: 32px 16px; }
+    h1 { font-size: 1.4rem; }
+    label { display: block; margin: 12px 0 4px; }
+    input { width: 100%; box-sizing: border-box; padding: 10px; background: #111318; color: inherit; border: 1px solid #333; border-radius: 4px; font: inherit; }
+    button { margin-top: 16px; padding: 10px 16px; background: transparent; color: #ff3d5e; border: 1px solid #ff3d5e; border-radius: 4px; font: inherit; cursor: pointer; }
+    .muted { color: #9a978e; font-size: 14px; }
+    #msg { margin-top: 16px; }
+  </style>
+</head>
+<body>
+<main>
+  <img src="logo-stacked.webp" alt="Syndicate Tycoon" width="160">
+  <h1>Delete your account</h1>
+  <p>This removes your account from this game server: your connected company, its synced actions, raids, sessions, recovery codes, alliance membership, support tickets and privacy settings. It cannot be undone.</p>
+  <p class="muted">Messages and posts you wrote stay visible as "deleted" so conversations still make sense; moderation records are kept for up to a year, then removed. Local companies on your own devices are not stored on the server and are not affected. You can also delete the account in the game under Online → Account.</p>
+  <form id="f">
+    <label for="u">Username</label><input id="u" autocomplete="username" required>
+    <label for="p">Password</label><input id="p" type="password" autocomplete="current-password" required>
+    <button type="submit">Delete my account</button>
+  </form>
+  <p id="msg" role="status"></p>
+</main>
+<script>
+  document.getElementById('f').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('msg');
+    if (!confirm('Delete this account for good?')) return;
+    try {
+      const r = await fetch('api/delete-account', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: document.getElementById('u').value, password: document.getElementById('p').value }) });
+      const d = await r.json().catch(() => ({}));
+      msg.textContent = r.ok ? 'Your account has been deleted.' : (d.error || 'That did not work. Try again.');
+    } catch { msg.textContent = 'The game server is not reachable.'; }
+  });
+</script>
+</body>
+</html>
