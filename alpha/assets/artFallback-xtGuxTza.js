@@ -1,0 +1,1 @@
+function e(e){return t=>{let n=t.currentTarget;e&&n.dataset.fell!==`1`?(n.dataset.fell=`1`,n.src=e):n.style.display=`none`}}export{e as t};
