@@ -3,10 +3,13 @@
 //   with the cached copy as the offline fallback.
 // - Build files under assets/ have a content hash in their name and never change: cache first.
 // - Art is served from its own cache at once and refreshed in the background (stale while revalidate).
-// main.tsx registers sw.js?v=<build>, so every build installs afresh, precaches its chunks and prunes
+// - version.json is never cached: the game reads it to spot a newer build (src/update.ts).
+// - Page and shell requests skip the browser's HTTP cache (GitHub Pages lets it keep files for 10 minutes),
+//   so a fresh publish is seen at once instead of the copy from the last visit.
+// update.ts registers sw.js?v=<build id>, so every build installs afresh, precaches its chunks and prunes
 // the previous build's. The previous working version stays cached until a new one has fully loaded, so an
 // update can never leave the player without a game that opens (TECH_STACK_AND_OFFLINE.md).
-const CACHE = 'syndicate-tycoon-v4';
+const CACHE = 'syndicate-tycoon-v5';
 const ART = 'syndicate-tycoon-art';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'logo-stacked.webp', 'icon-192.png', 'icon-512.png', 'favicon-32.png'];
 
@@ -17,7 +20,7 @@ self.addEventListener('install', (event) => {
     const assets = await manifest.json();
     const cache = await caches.open(CACHE);
     // Includes every lazily loaded section and the simulation worker, even before they are first opened.
-    await cache.addAll([...SHELL, ...assets]);
+    await cache.addAll([...SHELL, ...assets].map((u) => new Request(u, { cache: 'reload' })));
     await cache.put('./offline-assets.json', new Response(JSON.stringify(assets)));
     await self.skipWaiting();
   })());
@@ -46,7 +49,7 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   // The game server's answers are live state: never serve them from a cache.
-  if (request.method !== 'GET' || url.origin !== self.location.origin || url.pathname.includes('/api/')) return;
+  if (request.method !== 'GET' || url.origin !== self.location.origin || url.pathname.includes('/api/') || url.pathname.endsWith('/version.json')) return;
   if (url.pathname.includes('/assets/')) {
     event.respondWith(caches.match(request, { ignoreVary: true }).then((hit) => hit ?? fetch(request).then((r) => put(CACHE, request, r))));
     return;
@@ -63,7 +66,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   event.respondWith(
-    fetch(request)
+    fetch(request, { cache: 'no-cache' })
       .then((response) => put(CACHE, request, response))
       .catch(() => caches.match(request, { ignoreVary: true }).then((hit) => hit ?? (request.mode === 'navigate' ? caches.match('./') : undefined)))
       .then((r) => r ?? new Response('', { status: 504 })),
