@@ -16,4 +16,3 @@ h1 { margin: 0; line-height: 0; }
 @media (max-height: 420px) and (orientation: landscape) { .wordmark { width: min(150px, 28vw); } .announcement { padding: 24px; transform: none; } .status { margin-top: 18px; } }
 .legal { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 2; color: #9fb0bf; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; padding: 8px; }
 .legal:hover, .legal:focus-visible { color: #e8edf2; }
-.content-notice { margin: 16px auto 0; max-width: 380px; color: #b5c3ce; font-size: 12px; line-height: 1.6; }
