@@ -12294,6 +12294,9 @@ Show funding‖Näita rahastust
 Show goals‖Näita eesmärke
 .infra-bench‖.infra-bench
 `,`
+left‖jäänud
+BCRN payouts every 30 minutes‖BCRN väljamaksed iga 30 minuti järel
+· paused‖· peatatud
 Profitability leaders‖Kasumlikkuse liidrid
 Former‖Endine töötaja
 · Former‖· Endine töötaja
