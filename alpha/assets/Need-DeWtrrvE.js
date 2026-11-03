@@ -1,0 +1,1 @@
+import{jn as e}from"./content-BTSKcGEs.js";var t=e(),n=({children:e,title:n,ok:r})=>(0,t.jsx)(`b`,{className:`need-badge${r?` ok`:``}`,title:n,children:e}),r=({items:e,title:r})=>(0,t.jsx)(`span`,{className:`need-badges`,title:r,children:e.map(e=>(0,t.jsx)(n,{children:e},e))});export{r as n,n as t};
