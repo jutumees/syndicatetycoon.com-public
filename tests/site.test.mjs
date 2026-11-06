@@ -17,12 +17,11 @@ test('page does not claim a launch date or collect signups', async () => {
   assert.doesNotMatch(html, /<form/i);
 });
 
-test('footer exposes project links, donation, language choice and its build', async () => {
+test('footer exposes project links and donation, without language choice or build', async () => {
   const html = await readFile(new URL('index.html', pub), 'utf8');
   assert.match(html, /href="about\//);
   assert.match(html, /href="privacy\//);
   assert.match(html, /https:\/\/paypal\.me\/rennoispoor/);
-  assert.match(html, /id="site-language"/);
-  assert.match(html, /Build 03112026-195/);
+  assert.doesNotMatch(html, /site-language|site-build/);
   await access(new URL('about/index.html', pub));
 });

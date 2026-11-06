@@ -37,32 +37,7 @@
         <a href="privacy/">Privacy policy</a>
         <a href="https://paypal.me/rennoispoor" target="_blank" rel="noreferrer">Donate</a>
       </nav>
-      <label class="site-language">Language
-        <select id="site-language" aria-label="Website language">
-          <option value="en">English</option>
-          <option value="et">Eesti</option>
-          <option value="es">Español</option>
-          <option value="de">Deutsch</option>
-          <option value="fr">Français</option>
-          <option value="ru">Русский</option>
-          <option value="zh">简体中文</option>
-        </select>
-      </label>
-      <span class="site-build" title="Syndicate Tycoon build">Build 03112026-195</span>
     </footer>
   </main>
-  <script>
-    (() => {
-      const field = document.getElementById('site-language');
-      const saved = localStorage.getItem('syndicate-tycoon-lang') || navigator.language.slice(0, 2);
-      if ([...field.options].some((option) => option.value === saved)) field.value = saved;
-      document.documentElement.lang = field.value;
-      field.addEventListener('change', () => {
-        // The game reads this same per-device preference when /alpha opens.
-        localStorage.setItem('syndicate-tycoon-lang', field.value);
-        document.documentElement.lang = field.value;
-      });
-    })();
-  </script>
 </body>
 </html>
