@@ -21,7 +21,8 @@
 <main>
   <img src="logo-stacked.webp" alt="Syndicate Tycoon" width="160">
   <h1>Delete your account</h1>
-  <p>This removes your account from this game server: your connected company, its synced actions, raids, sessions, recovery codes, your email address, alliance membership, support tickets and privacy settings. It cannot be undone.</p>
+  <p>Your account is <strong>suspended straight away</strong> and every device is signed out. <strong>After 30 days</strong> it is removed from this game server for good: your connected company, its synced actions, raids, sessions, recovery codes, your email address, linked sign-in accounts, alliance membership, support tickets and privacy settings.</p>
+  <p><strong>Changed your mind?</strong> Sign in to the game again within those 30 days and the deletion is cancelled. After that it cannot be undone.</p>
   <p class="muted">Messages and posts you wrote stay visible as "deleted" so conversations still make sense; moderation records are kept for up to a year, then removed. Local companies on your own devices are not stored on the server and are not affected. You can also delete the account in the game under Online → Account.</p>
   <form id="f">
     <label for="u">Username</label><input id="u" autocomplete="username" required>
@@ -34,12 +35,12 @@
   document.getElementById('f').addEventListener('submit', async (e) => {
     e.preventDefault();
     const msg = document.getElementById('msg');
-    if (!confirm('Delete this account for good?')) return;
+    if (!confirm('Delete this account? It is suspended now and deleted for good after 30 days unless you sign in again.')) return;
     try {
       const r = await fetch('api/delete-account', { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: document.getElementById('u').value, password: document.getElementById('p').value }) });
       const d = await r.json().catch(() => ({}));
-      msg.textContent = r.ok ? 'Your account has been deleted.' : (d.error || 'That did not work. Try again.');
+      msg.textContent = r.ok ? `Done. Your account is suspended and will be deleted on ${new Date(d.deleteAt).toLocaleDateString()}. Sign in again before then to keep it.` : (d.error || 'That did not work. Try again.');
     } catch { msg.textContent = 'The game server is not reachable.'; }
   });
 </script>
