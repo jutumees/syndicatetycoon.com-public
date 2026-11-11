@@ -24,24 +24,33 @@
   <p>Your account is <strong>suspended straight away</strong> and every device is signed out. <strong>After 30 days</strong> it is removed from this game server for good: your connected company, its synced actions, raids, sessions, recovery codes, your email address, linked sign-in accounts, alliance membership, support tickets and privacy settings.</p>
   <p><strong>Changed your mind?</strong> Sign in to the game again within those 30 days and the deletion is cancelled. After that it cannot be undone.</p>
   <p class="muted">Messages and posts you wrote stay visible as "deleted" so conversations still make sense; moderation records are kept for up to a year, then removed. Local companies on your own devices are not stored on the server and are not affected. You can also delete the account in the game under Online → Account.</p>
-  <form id="f">
+  <form id="f" novalidate>
     <label for="u">Username</label><input id="u" autocomplete="username" required>
     <label for="p">Password</label><input id="p" type="password" autocomplete="current-password" required>
-    <button type="submit">Delete my account</button>
+    <div id="factor" hidden><label for="code">Authenticator or unused two-factor backup code</label><input id="code" autocomplete="one-time-code" maxlength="32"></div>
+    <label><input id="understood" type="checkbox" style="width:auto"> I understand this suspends my account now and deletes it after 30 days.</label>
+    <button id="submit" type="submit">Delete my account</button>
+    <button id="restart" type="button" hidden>Start again</button>
   </form>
   <p id="msg" role="status"></p>
 </main>
 <script>
+  let challenge = null, busy = false;
+  document.getElementById('restart').onclick = () => { challenge=null;document.getElementById('factor').hidden=true;document.getElementById('restart').hidden=true;document.getElementById('u').readOnly=false;document.getElementById('p').disabled=false;document.getElementById('msg').textContent=''; };
   document.getElementById('f').addEventListener('submit', async (e) => {
     e.preventDefault();
     const msg = document.getElementById('msg');
-    if (!confirm('Delete this account? It is suspended now and deleted for good after 30 days unless you sign in again.')) return;
+    if(busy)return;
+    if(!document.getElementById('understood').checked){msg.textContent='Please acknowledge the deletion terms first.';return}
+    busy=true;document.getElementById('submit').disabled=true;
     try {
       const r = await fetch('api/delete-account', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: document.getElementById('u').value, password: document.getElementById('p').value }) });
+        body: JSON.stringify({ challenge, code: document.getElementById('code').value, username: document.getElementById('u').value, password: document.getElementById('p').value }) });
       const d = await r.json().catch(() => ({}));
+      if(r.ok&&d.twoFactor){challenge=d.challenge;document.getElementById('factor').hidden=false;document.getElementById('restart').hidden=false;document.getElementById('u').readOnly=true;document.getElementById('p').value='';document.getElementById('p').disabled=true;msg.textContent='Enter your authenticator or unused two-factor backup code to finish deletion.';return}
+      if(r.ok)document.getElementById('f').hidden=true;
       msg.textContent = r.ok ? `Done. Your account is suspended and will be deleted on ${new Date(d.deleteAt).toLocaleDateString()}. Sign in again before then to keep it.` : (d.error || 'That did not work. Try again.');
-    } catch { msg.textContent = 'The game server is not reachable.'; }
+    } catch { msg.textContent = 'The game server is not reachable.'; } finally {busy=false;document.getElementById('submit').disabled=false}
   });
 </script>
 </body>
